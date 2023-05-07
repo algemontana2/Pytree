@@ -1,6 +1,5 @@
-
-from element import GEDCOMElement
 from gedcom import GEDCOM
+
 
 def parse(file):
     gedcom = GEDCOM()
