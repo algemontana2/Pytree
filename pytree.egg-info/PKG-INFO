@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: pytree
+Version: 0.1.0
+Summary: A simple GEDCOM parser library in Python
+Author: King Al
+Author-email: aleich989@gmail.com
