@@ -1,46 +1,49 @@
+from element import Element
 
-from element import GEDCOMElement
+class Individual:
+    def __init__(self, element: Element):
+        assert isinstance(element, Element), "Invalid element parameter. Expected an instance of the Element class."
 
-class Individual(GEDCOMElement):
-    def get_name(self):
-        for child in self.children:
+        self.id = element.value
+        self.value = element.value
+        self.name = None
+        self.gender = None
+        self.birth_date = None
+        self.birth_place = None
+        self.death_date = None
+        self.death_place = None
+        self.families = []
+        self._parse(element)
+
+    def _parse(self, element: Element):
+        for child in element.children:
             if child.tag == 'NAME':
-                return child.value
-        return None
+                self.name = child.value
+            elif child.tag == 'SEX':
+                self.gender = child.value
+            elif child.tag == 'BIRT':
+                self._parse_birth(child)
+            elif child.tag == 'DEAT':
+                self._parse_death(child)
+            elif child.tag == 'FAMS':
+                self.families.append(child.value)
 
-    def get_sex(self):
-        for child in self.children:
-            if child.tag == 'SEX':
-                return child.value
-        return None
+    def _parse_birth(self, element: Element):
+        for child in element.children:
+            if child.tag == 'DATE':
+                self.birth_date = child.value
+            elif child.tag == 'PLAC':
+                self.birth_place = child.value
 
-    def get_birth_date(self):
-        for child in self.children:
-            if child.tag == 'BIRT':
-                date_child = child.get_child('DATE')
-                if date_child is not None:
-                    return date_child.value
-        return None
+    def _parse_death(self, element: Element):
+        for child in element.children:
+            if child.tag == 'DATE':
+                self.death_date = child.value
+            elif child.tag == 'PLAC':
+                self.death_place = child.value
 
-    def get_death_date(self):
-        for child in self.children:
-            if child.tag == 'DEAT':
-                date_child = child.get_child('DATE')
-                if date_child is not None:
-                    return date_child.value
-        return None
+    def is_individual(self):
+        return True
 
-    def get_families(self):
-        families = []
-        for child in self.children:
-            if child.tag in ['FAMS', 'FAMC']:
-                family = self.gedcom.get_family_by_id(child.value)
-                if family is not None:
-                    families.append(family)
-        return families
-
-    def get_children(self):
-        children = []
-        for family in self.get_families():
-            children.extend(family.get_children())
-        return children
+    def __str__(self):
+        return f"Individual {self.id}: Name - {self.name}, Gender - {self.gender}, Birth Date - {self.birth_date}, Birth Place - {self.birth_place}, Death Date - {self.death_date}, Death Place - {self.death_place}, Families - {', '.join(self.families)}"
