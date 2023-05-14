@@ -32,21 +32,14 @@ def parse_gedcom_file(file_path: str):
         if parsed_line is None:
             continue
 
-        if current_element is None:
-            current_element = parsed_line
-        else:
-            if parsed_line.level > current_element.level:
-                current_element.add_child(parsed_line)
-                stack.append(current_element)
-                current_element = parsed_line
-            else:
+        if current_element is not None:
+            if parsed_line.level <= current_element.level:
                 while stack and parsed_line.level <= current_element.level:
                     current_element = stack.pop()
 
-                current_element.add_child(parsed_line)
-                stack.append(current_element)
-                current_element = parsed_line
-
+            current_element.add_child(parsed_line)
+            stack.append(current_element)
+        current_element = parsed_line
         if parsed_line.tag == 'INDI':
             individual = Individual(parsed_line)
             individuals[individual.id] = individual
